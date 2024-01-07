@@ -1,96 +1,79 @@
-// import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/carslider_provider.dart';
 
 class CarSlider extends StatefulWidget {
-   const CarSlider({super.key});
-
+  const CarSlider({Key? key}) : super(key: key);
 
   @override
   State<CarSlider> createState() => _CarSliderState();
 }
 
 class _CarSliderState extends State<CarSlider> {
+  @override
+  void initState() {
+    super.initState();
 
-    int _currentIndex = 0;
-
-  final _imagePaths=[
-"asset/car/Property 1=1.png" ,
-"asset/car/Property 1=2.png",
-"asset/car/Property 1=3.png",
-"asset/car/Property 1=4.png",
-"asset/car/Property 1=5.png"
-
-///   use listview.builder
-
- ];
-
-
-  void _nextImage() {
-    setState(() {
-      _currentIndex =  (_currentIndex + 1) % _imagePaths.length;
-    });
+    // Pre-cache images
+    precacheImages();
   }
 
-  void _previousImage() {
-    setState(() {
-      _currentIndex = (_currentIndex - 1 + _imagePaths.length) % _imagePaths.length;
-    });
+  void precacheImages() async {
+    CarSliderProvider provider = Provider.of<CarSliderProvider>(context, listen: false);
+
+    for (String imagePath in provider.imagePaths) {
+      await precacheImage(AssetImage(imagePath), context);
+    }
   }
- @override
+
+  @override
   Widget build(BuildContext context) {
-    return  Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 40),
-      child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon:const Icon(Icons.arrow_back),
-                onPressed: _previousImage,
-              ),
-              Expanded(
-                child: AnimatedSwitcher(
-                  switchInCurve: Curves.easeInOutCubicEmphasized,
-                  duration:const Duration(milliseconds: 0),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return ScaleTransition(
-                    
-                      scale: animation,
-                    
-                      child: child,
-                    );
-                  },
-                  child: Container(
-                    
-                    key: ValueKey<int>(_currentIndex),
-                    // width: 400,
-                    height: 400,
-                   
-                    child: Image.asset(
-                      _imagePaths[_currentIndex],
-                      fit: BoxFit.cover,
+    return ChangeNotifierProvider(
+      create: (context) => CarSliderProvider(),
+      child: Consumer<CarSliderProvider>(
+        builder: (context, provider, child) {
+          return Padding(
+            padding:  EdgeInsets.symmetric(  horizontal: MediaQuery.of(context).size.width * 0.05,
+    vertical: MediaQuery.of(context).size.height * 0.02,),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: provider.previousImage,
+                  ),
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      switchInCurve: Curves.slowMiddle,
+                      duration: const Duration(milliseconds: 1),
+                      transitionBuilder: (Widget child, Animation<double> animation) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      child: Container(
+                        key: ValueKey<int>(provider.currentIndex),
+                        height: 400,
+                        child: Image.asset(
+                          provider.currentImagePath,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: provider.nextImage,
+                  ),
+                ],
               ),
-              IconButton(
-                icon:const Icon(Icons.arrow_forward),
-                onPressed: _nextImage,
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
+      ),
     );
   }
-
-
-
-
-    
-    
-    
-    
-  }
-    
-    
+}

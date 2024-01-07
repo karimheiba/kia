@@ -15,16 +15,11 @@ class Footer extends StatelessWidget {
         children: [
           /// Left section contain the logo, app store  ad copy wright
           leftSection(context),
-        // const  SizedBox(
-        //     width: 10,
-        //   ),
+        
       
           // middle Section
           middleSection(context),
-        //  const SizedBox(
-        //     width: 20,
-        //   ),
-      
+       
           /// end section
           endSection(context)
         ],
@@ -86,14 +81,16 @@ class Footer extends StatelessWidget {
         ),
         Container(
           width: 350,
-          child: Text(
-              "The Telluride packs a long list of standard features, \nimpressive handling and power, advanced technology, and the most interior passenger room in its segment.",
-              style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                    fontSize: 12,
-                    color:const Color(0xff9C9999),
-                    overflow: TextOverflow.fade,
-                    
-                  )),
+          child: Expanded(
+            child: Text(
+                "The Telluride packs a long list of standard features, \nimpressive handling and power, advanced technology, and the most interior passenger room in its segment.",
+                style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      fontSize: 12,
+                      color:const Color(0xff9C9999),
+                      overflow: TextOverflow.fade,
+                      
+                    )),
+          ),
         )
       ],
     );
